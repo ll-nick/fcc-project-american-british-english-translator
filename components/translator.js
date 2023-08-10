@@ -7,10 +7,14 @@ class Translator {
   translate(text, americanToBritish = true) {
     let translated = text;
 
+    const americanTimeRegex = /(\d{1,2}):(\d\d)/;
+    const englishTimeRegex = /(\d{1,2})\.(\d\d)/;
+
     if (americanToBritish) {
       translated = this.replaceStringsFromDict(translated, americanOnly);
       translated = this.replaceStringsFromDict(translated, americanToBritishSpelling);
       translated = this.replaceStringsFromDict(translated, americanToBritishTitles);
+      translated = translated.replace(americanTimeRegex, this.highlight('$1.$2'));
     } else {
       const britishToAmericaSpelling = this.invertObject(americanToBritishSpelling);
       const britishToAmericaTitles = this.invertObject(americanToBritishTitles);
@@ -18,6 +22,7 @@ class Translator {
       translated = this.replaceStringsFromDict(translated, britishOnly);
       translated = this.replaceStringsFromDict(translated, britishToAmericaSpelling);
       translated = this.replaceStringsFromDict(translated, britishToAmericaTitles);
+      translated = translated.replace(englishTimeRegex, this.highlight('$1:$2'));
     }
 
     if (translated === text) {
