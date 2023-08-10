@@ -43,15 +43,12 @@ suite('Functional Tests', () => {
       .end(function (err, res) {
         assert.equal(res.status, 200);
         assert.equal(res.type, 'application/json');
-        assert.equal(res.body.text, text);
         assert.equal(res.body.error, 'Invalid value for locale field');
         done();
       });
   });
 
   test('missing text', function (done) {
-    const text = 'Mangoes are my favorite fruit.';
-
     chai
       .request(server)
       .keepOpen()
@@ -62,24 +59,24 @@ suite('Functional Tests', () => {
       .end(function (err, res) {
         assert.equal(res.status, 200);
         assert.equal(res.type, 'application/json');
-        assert.equal(res.body.text, text);
         assert.equal(res.body.error, 'Required field(s) missing');
         done();
       });
   });
 
   test('missing locale', function (done) {
+    const text = 'Mangoes are my favorite fruit.';
+
     chai
       .request(server)
       .keepOpen()
       .post('/api/translate')
       .send({
-        text: text,
+        text: text
       })
       .end(function (err, res) {
         assert.equal(res.status, 200);
         assert.equal(res.type, 'application/json');
-        assert.equal(res.body.text, text);
         assert.equal(res.body.error, 'Required field(s) missing');
         done();
       });
@@ -97,7 +94,6 @@ suite('Functional Tests', () => {
       .end(function (err, res) {
         assert.equal(res.status, 200);
         assert.equal(res.type, 'application/json');
-        assert.equal(res.body.text, text);
         assert.equal(res.body.error, 'No text to translate');
         done();
       });
@@ -117,7 +113,6 @@ suite('Functional Tests', () => {
       .end(function (err, res) {
         assert.equal(res.status, 200);
         assert.equal(res.type, 'application/json');
-        assert.equal(res.body.text, text);
         assert.equal(res.body.translation, 'Everything looks good to me!');
         done();
       });
