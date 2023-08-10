@@ -19,6 +19,14 @@ function invertObject(ojb) {
 const britishToAmericaSpelling = invertObject(americanToBritishSpelling);
 const britishToAmericaTitles = invertObject(americanToBritishTitles);
 
+function isFirstCharUpperCase(str) {
+  return str.charAt(0) === str.charAt(0).toUpperCase();
+}
+
+function capitalizeFirstChar(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 class Translator {
   translate(text, locale) {
     this.validateText(text);
@@ -66,8 +74,10 @@ class Translator {
   replaceStringsFromDict(text, dict) {
     for (const word in dict) {
       const reg = new RegExp('(?<=^| )(' + word + ')(?=[ ,.]|$)', 'gi');
-      if (text.match(reg)) {
-        text = text.replace(reg, this.highlight(dict[word]));
+      const match = text.match(reg)
+      if (match) {
+        const replaceWith = isFirstCharUpperCase(match[0]) ? capitalizeFirstChar(dict[word]) : dict[word]
+        text = text.replace(reg, this.highlight(replaceWith));
       }
     }
     return text;
