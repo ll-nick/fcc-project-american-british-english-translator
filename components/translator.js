@@ -3,32 +3,64 @@ const americanToBritishSpelling = require('./american-to-british-spelling.js');
 const americanToBritishTitles = require("./american-to-british-titles.js")
 const britishOnly = require('./british-only.js')
 
+function invertObject(ojb) {
+  const invertedObj = {};
+
+  for (const key in ojb) {
+    if (ojb.hasOwnProperty(key)) {
+      const value = ojb[key];
+      invertedObj[value] = key;
+    }
+  }
+
+  return invertedObj;
+}
+
+const britishToAmericaSpelling = invertObject(americanToBritishSpelling);
+const britishToAmericaTitles = invertObject(americanToBritishTitles);
+
 class Translator {
-  translate(text, americanToBritish = true) {
-    let translated = text;
+  translate(text, locale) {
+    this.validateText(text);
+    const americanToBritish = this.isAmericanToBritish(locale);
 
-    const americanTimeRegex = /(\d{1,2}):(\d\d)/;
-    const englishTimeRegex = /(\d{1,2})\.(\d\d)/;
-
+    let translated;
     if (americanToBritish) {
-      translated = this.replaceStringsFromDict(translated, americanOnly);
-      translated = this.replaceStringsFromDict(translated, americanToBritishSpelling);
-      translated = this.replaceStringsFromDict(translated, americanToBritishTitles);
-      translated = translated.replace(americanTimeRegex, this.highlight('$1.$2'));
+      translated = this.translateAmericanToBritish(text);
     } else {
-      const britishToAmericaSpelling = this.invertObject(americanToBritishSpelling);
-      const britishToAmericaTitles = this.invertObject(americanToBritishTitles);
-
-      translated = this.replaceStringsFromDict(translated, britishOnly);
-      translated = this.replaceStringsFromDict(translated, britishToAmericaSpelling);
-      translated = this.replaceStringsFromDict(translated, britishToAmericaTitles);
-      translated = translated.replace(englishTimeRegex, this.highlight('$1:$2'));
+      translated = this.translateBritishToAmerican(text);
     }
 
     if (translated === text) {
       return 'Everything looks good to me!'
     }
     return translated;
+  }
+
+  translateAmericanToBritish(text) {
+    let translated = text;
+
+    translated = this.replaceStringsFromDict(translated, americanOnly);
+    translated = this.replaceStringsFromDict(translated, americanToBritishSpelling);
+    translated = this.replaceStringsFromDict(translated, americanToBritishTitles);
+
+    const americanTimeRegex = /(\d{1,2}):(\d\d)/;
+    translated = translated.replace(americanTimeRegex, this.highlight('$1.$2'));
+
+    return translated
+  }
+
+  translateBritishToAmerican(text) {
+    let translated = text;
+
+    translated = this.replaceStringsFromDict(translated, britishOnly);
+    translated = this.replaceStringsFromDict(translated, britishToAmericaSpelling);
+    translated = this.replaceStringsFromDict(translated, britishToAmericaTitles);
+
+    const englishTimeRegex = /(\d{1,2})\.(\d\d)/;
+    translated = translated.replace(englishTimeRegex, this.highlight('$1:$2'));
+
+    return translated
   }
 
   replaceStringsFromDict(text, dict) {
@@ -45,17 +77,16 @@ class Translator {
     return `<span class="highlight">${str}</span>`
   }
 
-  invertObject(ojb) {
-    const invertedObj = {};
+  validateText(text) {
+    if (text === '') throw new Error('No text to translate')
+    if (!text) throw new Error('Required field(s) missing');
+  }
 
-    for (const key in ojb) {
-      if (ojb.hasOwnProperty(key)) {
-        const value = ojb[key];
-        invertedObj[value] = key;
-      }
-    }
-
-    return invertedObj;
+  isAmericanToBritish(locale) {
+    if (!locale) throw new Error('Required field(s) missing');
+    if (locale === 'american-to-british') return true;
+    if (locale === 'british-to-american') return false;
+    throw new Error('Invalid value for locale field');
   }
 }
 
