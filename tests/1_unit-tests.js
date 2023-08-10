@@ -149,4 +149,32 @@ suite('Unit Tests', () => {
         assert.equal(output, `Tea time is usually around 4 or ${translator.highlight('4:30')}.`)
     })
 
+    // Highlight tests, not that they add any value or anything
+    test('Highlight Mangoes are my favorite fruit.', () => {
+        const input = 'Mangoes are my favorite fruit.'
+        const output = translator.translate(input, 'american-to-british');
+
+        assert.isOk(output.match(/<span class="highlight">\w+<\/span>/))
+    })
+
+    test('Highlight I ate yogurt for breakfast.', () => {
+        const input = 'I ate yogurt for breakfast.'
+        const output = translator.translate(input, 'american-to-british');
+
+        assert.isOk(output.match(/<span class="highlight">\w+<\/span>/))
+    })
+
+    test('Highlight We watched the footie match for a while.', () => {
+        const input = 'We watched the footie match for a while.'
+        const output = translator.translate(input, 'british-to-american');
+
+        assert.isOk(output.match(/<span class="highlight">\w+<\/span>/))
+    })
+
+    test('Highlight Paracetamol takes up to an hour to work.', () => {
+        const input = 'Paracetamol takes up to an hour to work.'
+        const output = translator.translate(input, 'british-to-american');
+
+        assert.isOk(output.match(/<span class="highlight">\w+<\/span>/))
+    })
 });
