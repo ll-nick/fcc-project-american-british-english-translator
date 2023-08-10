@@ -28,8 +28,9 @@ class Translator {
 
   replaceStringsFromDict(text, dict) {
     for (const word in dict) {
-      if (text.match(word)) {
-        text = text.replace(' ' + word + ' ', ' ' + this.highlight(dict[word]) + ' ');
+      const reg = new RegExp('(?<=^| )(' + word + ')(?=[ ,.]|$)', 'gi');
+      if (text.match(reg)) {
+        text = text.replace(reg, this.highlight(dict[word]));
       }
     }
     return text;
